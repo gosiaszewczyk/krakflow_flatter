@@ -1,24 +1,94 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
+}
+
+class Task {
+  final String title;
+  final String deadline;
+  final bool done;
+  final String priority;
+
+  Task({
+    required this.title,
+    required this.deadline,
+    required this.done,
+    required this.priority,
+  });
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final List<Task> tasks = [
+      Task(
+        title: "Przygotować prezentację",
+        deadline: "jutro",
+        done: true,
+        priority: "wysoki",
+      ),
+      Task(
+        title: "Oddać raport z laboratoriów",
+        deadline: "dzisiaj",
+        done: false,
+        priority: "wysoki",
+      ),
+      Task(
+        title: "Powtórzyć widgety Flutter",
+        deadline: "w piątek",
+        done: false,
+        priority: "średni",
+      ),
+      Task(
+        title: "Napisać notatki do kolokwium",
+        deadline: "w weekend",
+        done: false,
+        priority: "niski",
+      ),
+    ];
+
+    int completedCount = tasks.where((t) => t.done).length;
+
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'KrakFlow',
       home: Scaffold(
         appBar: AppBar(
-          title: Text("KrakFlow"),
+          title: const Text("KrakFlow"),
         ),
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("KrakFlow"),
-              Text("Organizacja studiów"),
-              Text("Dzisiejsze zadania"),
+              Text(
+                "Masz dziś ${tasks.length} zadania",
+                style: const TextStyle(fontSize: 18),
+              ),
+              Text(
+                "Wykonano: $completedCount",
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Dzisiejsze zadania",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    return TaskCard(task: tasks[index]);
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -26,3 +96,18 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+class TaskCard extends StatelessWidget {
+  final Task task;
+
+  const TaskCard({super.key, required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: ListTile(
+            leading: Icon(
+              task.done ? Icons.check_circle : Icons.radio_button_unchecked,
+            ),
+            title: Text(task.title),
+            subtitle: Text("termin: ${task.deadline} | priorytet:
